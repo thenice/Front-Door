@@ -26,6 +26,10 @@ class User < ActiveRecord::Base
     end
   end
   
+  def to_public
+    self.attributes.delete_if {|k,v| k.include?("password") }
+  end
+  
   def encrypt_password
     if password.present?
       self.password_salt = BCrypt::Engine.generate_salt

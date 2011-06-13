@@ -2,6 +2,7 @@ FrontDoor::Application.routes.draw do
   resources :users
   
   match 'login' => 'users#login' # login route
+  match 'logged_in' => 'users#logged_in' # login route
   
   # The priority is based upon order of creation:
   # first created -> highest priority.

@@ -12,10 +12,18 @@ class UsersController < ApplicationController
     end
   end
   
+  def logged_in
+    result = { :logged_in => @user.present? ? true : false }
+    respond_to do |format|
+      format.html { render :text => result.to_json }
+      format.xml  { render :xml => result.to_xml }
+      format.json  { render :json => result.to_json }
+    end
+  end
+  
   # GET /users
   # GET /users.xml
   def index
-    render :text => 'hiiii'
   end
 
   # GET /users/1
@@ -40,16 +48,20 @@ class UsersController < ApplicationController
   # POST /users
   # POST /users.xml
   def create
-    @user = User.new(params[:user])
+    @user = User.new(:username => params[:username],
+      :password => params[:password],
+      :password_confirmation => params[:password_confirmation])
+      
     respond_to do |format|
       if @user.save
-        format.html { redirect_to(@user, :notice => 'User was successfully created.') }
-        format.xml  { render :xml => @user, :status => :created, :location => @user }
-        format.json  { render :json => @user, :status => :created, :location => @user }
+        @public_user = @user.to_public
+        format.html { redirect_to(@public_user, :notice => 'User was successfully created.') }
+        format.xml  { render :xml => @public_user, :status => :created, :location => @public_user }
+        format.json  { render :json => @public_user, :status => :created, :location => @public_user }
       else
         format.html { render :action => "new" }
         format.xml  { render :xml => @user.errors, :status => :unprocessable_entity }
-        format.json  { render :json => @user.errors, :status => :unprocessable_entity }
+        format.json  { render :json => { :errors => @user.errors } }
       end
     end
   end
