@@ -4,7 +4,7 @@ class UsersController < ApplicationController
   
   def login
     token = User.authenticate(params[:username], params[:password])
-    result =  token.present? ? {:token => token} : {:token => "", :errors => ["Bad login"]}
+    result =  token.present? ? {:token => token} : {:errors => ["Bad login"]}
     respond_to do |format|
       format.html { render :text => result.to_json }
       format.xml  { render :xml => result.to_xml }

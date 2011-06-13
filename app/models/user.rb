@@ -26,6 +26,7 @@ class User < ActiveRecord::Base
     end
   end
   
+  # strip password from return hash
   def to_public
     self.attributes.delete_if {|k,v| k.include?("password") }
   end
@@ -40,6 +41,5 @@ class User < ActiveRecord::Base
   def setup_new_user
     self.logins = 0
   end
-  
   
 end

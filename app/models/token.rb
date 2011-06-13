@@ -3,12 +3,12 @@ class Token < ActiveRecord::Base
   SESSION_TIME = 30 # time to persist session, in minutes
   
   belongs_to :user
-  before_create Proc.new { |token| token.set_token }
+  before_create Proc.new { |token| token.set_value }
   validates_presence_of :user_id, :message => "Must be assoiciated with user"
   
   named_scope :expired, :conditions => ["valid_until < '#{Time.now.to_s(:db)}'"]
    
-  def set_token
+  def set_value
     self.value = UUID.new.generate
     self.valid_until = SESSION_TIME.minutes.from_now
   end
@@ -22,7 +22,7 @@ class Token < ActiveRecord::Base
   end
   
   def Token.purge_expired_tokens
-    Token.expired.each { |t| t.destroy }
+    Token.expired.each { |t| puts "."; t.destroy }
   end
   
 end
