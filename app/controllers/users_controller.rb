@@ -3,12 +3,13 @@ class UsersController < ApplicationController
   before_filter :authenticate, :except => [:create, :login]
   
   def login
-    token = User.authenticate(params[:username], params[:password])
-    result =  token.present? ? {:token => token} : {:errors => ["Bad login"]}
+    token_value = User.authenticate(params[:username], params[:password])
+    token = Token.find_by_value(token_value)
+    result =  token.present? ? {:token => token.value, :user_id => token.user.id} : {:errors => ["Bad login"]}
     respond_to do |format|
-      format.html { render :text => result.to_json }
-      format.xml  { render :xml => result.to_xml }
-      format.json  { render :json => result.to_json }
+      format.html { render :text => result.to_json } 
+      format.xml  { render :xml => result.to_xml } 
+      format.json  { render :json => result.to_json } 
     end
   end
   
@@ -23,17 +24,18 @@ class UsersController < ApplicationController
   
   # GET /users
   # GET /users.xml
+  # this is really the show action
   def index
+    respond_to do |format|
+      format.html # show.html.erb
+      format.xml  { render :xml => { :user => @user.to_public }.to_json }
+      format.json { render :json => { :user => @user.to_public }.to_json }
+    end
   end
 
   # GET /users/1
   # GET /users/1.xml
   def show
-    respond_to do |format|
-      format.html # show.html.erb
-      format.xml  { render :xml => @user }
-      format.json  { render :json => @user }
-    end
   end
 
   # GET /users/new
@@ -61,7 +63,7 @@ class UsersController < ApplicationController
       else
         format.html { render :action => "new" }
         format.xml  { render :xml => @user.errors, :status => :unprocessable_entity }
-        format.json  { render :json => { :errors => @user.errors } }
+        format.json  { render :json =>  @user.errors }
       end
     end
   end
